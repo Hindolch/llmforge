@@ -1,0 +1,5 @@
+outs:
+- md5: f3458f98754d0e19e93f32c01fbe30f7
+  size: 78585
+  hash: md5
+  path: raw_reddit_20250626_1214.jsonl
