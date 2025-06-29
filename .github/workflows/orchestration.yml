@@ -1,0 +1,35 @@
+name: Run TurboML Pipeline Every 12h
+
+on:
+  schedule:
+    - cron: "0 */12 * * *"  # Every 12 hours UTC
+  workflow_dispatch:        # Manual trigger support
+
+jobs:
+  turbo-pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Export environment variables
+        run: |
+          echo "HUGGINGFACE_TOKEN=${{ secrets.HUGGINGFACE_TOKEN }}" >> $GITHUB_ENV
+          echo "REDDIT_CLIENT_ID=${{ secrets.REDDIT_CLIENT_ID }}" >> $GITHUB_ENV
+          echo "REDDIT_CLIENT_SECRET=${{ secrets.REDDIT_CLIENT_SECRET }}" >> $GITHUB_ENV
+          echo "BREVO_SMTP_USER=${{ secrets.BREVO_SMTP_USER }}" >> $GITHUB_ENV
+          echo "BREVO_SMTP_PASS=${{ secrets.BREVO_SMTP_PASS }}" >> $GITHUB_ENV
+
+      - name: Run TurboML pipeline
+        run: python run_pipeline.py
