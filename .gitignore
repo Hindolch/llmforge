@@ -4,3 +4,4 @@ __pycache__
 /data
 /notebooks
 /download_model.py
+.env

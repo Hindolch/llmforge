@@ -31,6 +31,20 @@ def clean_text(text):
     text = re.sub(r"\s+", " ", text).strip()
     return text
 
+def remove_emojis(text):
+    emoji_pattern = re.compile(
+        "["
+        "\U0001F600-\U0001F64F"  # emoticons
+        "\U0001F300-\U0001F5FF"  # symbols & pictographs
+        "\U0001F680-\U0001F6FF"  # transport & map symbols
+        "\U0001F1E0-\U0001F1FF"  # flags
+        "\U00002700-\U000027BF"  # Dingbats
+        "\U000024C2-\U0001F251"
+        "]+",
+        flags=re.UNICODE,
+    )
+    return emoji_pattern.sub(r'', text)
+
 # -------------------- Processor Interface --------------------
 
 class Processor(ABC):
@@ -44,8 +58,7 @@ from datasets import Dataset
 from huggingface_hub import login as hf_login
 
 class RedditProcessor(Processor):
-    def __init__(self, out_path="data/raw_reddit.jsonl", hf_repo_id=None, hf_token=None):
-        self.out_path = out_path
+    def __init__(self, hf_repo_id=None, hf_token=None):
         self.hf_repo_id = hf_repo_id
         self.hf_token = hf_token
 
@@ -53,7 +66,6 @@ class RedditProcessor(Processor):
             hf_login(token=self.hf_token)
 
     def process_and_save(self, df: pd.DataFrame) -> pd.DataFrame:
-        os.makedirs(os.path.dirname(self.out_path), exist_ok=True)
 
         df = df[df["text"].str.split().str.len() > 30]
         df["toxicity"] = Detoxify("original").predict(df["text"].tolist())["toxicity"]
@@ -64,19 +76,21 @@ class RedditProcessor(Processor):
             lambda x: [flatten_to_string(c) for c in x] if isinstance(x, list) else [flatten_to_string(x)]
         )
 
-        df["prompt"] = df["text"].apply(lambda x: clean_string_literals(strip_inline_json(clean_text(x))))
+        df["prompt"] = df["text"].apply(lambda x:
+        remove_emojis(clean_string_literals(strip_inline_json(clean_text(x))))
+        )
 
-        df["completion"] = df["comments"].apply(lambda x: clean_string_literals(strip_inline_json(x[0])) if isinstance(x, list) and len(x) > 0 else "")
+        df["completion"] = df["comments"].apply(
+            lambda x: remove_emojis(clean_string_literals(strip_inline_json(x[0])))
+            if isinstance(x, list) and len(x) > 0 else ""
+        )
 
         # Drop rows with empty completions
         df = df[df["completion"].str.strip().astype(bool)]
 
-        df["prompt"] = df["prompt"].astype(str).apply(strip_inline_json).apply(clean_string_literals)
-        df["completion"] = df["completion"].astype(str).apply(strip_inline_json).apply(clean_string_literals)
+        df["prompt"] = df["prompt"].astype(str).apply(strip_inline_json).apply(clean_string_literals).apply(remove_emojis)
+        df["completion"] = df["completion"].astype(str).apply(strip_inline_json).apply(clean_string_literals).apply(remove_emojis)
 
-        # Save locally for backup
-        df[["prompt", "completion"]].to_json(self.out_path, orient="records", lines=True)
-        logging.info(f"✅ Saved local backup to {self.out_path}")
 
         # Push to Hugging Face if repo ID provided
         if self.hf_repo_id:
