@@ -1,0 +1,7 @@
+[core]
+    remote = origin_dvc
+['remote "origin_dvc"']
+    url = s3://turboml_project/dvcstore
+    endpointurl = https://dagshub.com/api/v1/repo-buckets/s3/roychoudhuryhindol
+    access_key_id = a4cf283e8a94b1f306c187df1c9a77397c34f1b8
+    secret_access_key = vkGVNxboxgpuQC2QKqJ--9nRB6mNYw
