@@ -15,8 +15,8 @@ def send_email_alert(alert_type: str):
     sender_email = "roychoudhuryhindol@gmail.com"  # Must be verified with Brevo
     receiver_email = "roychoudhuryhindol@gmail.com"
 
-    subject = f"⚠️ {alert_type} - TurboML Pipeline Triggered"
-    body = f"The TurboML pipeline just started due to: {alert_type}"
+    subject = f"⚠️ {alert_type} - LLMForge Pipeline Triggered"
+    body = f"The LLMForge pipeline just started due to: {alert_type}"
 
     msg = MIMEMultipart()
     msg["From"] = sender_email

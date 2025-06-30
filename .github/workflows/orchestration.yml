@@ -1,4 +1,4 @@
-name: Run TurboML Pipeline Every 12h
+name: Run LLMForge Pipeline Every 12h
 
 on:
   schedule:
@@ -31,5 +31,5 @@ jobs:
           echo "BREVO_SMTP_USER=${{ secrets.BREVO_SMTP_USER }}" >> $GITHUB_ENV
           echo "BREVO_SMTP_PASS=${{ secrets.BREVO_SMTP_PASS }}" >> $GITHUB_ENV
 
-      - name: Run TurboML pipeline
+      - name: Run LLMForge pipeline
         run: python run_pipeline.py

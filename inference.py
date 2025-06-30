@@ -26,7 +26,7 @@ def load_model():
         raise
 
 
-st.title("🦙 Chat with Finetuned TinyLlama")
+st.title("Finetuned TinyLlama 🦙")
 model, tokenizer = load_model()
 
 history = st.session_state.get("history", "")
@@ -39,5 +39,5 @@ if user_input:
     outputs = model.generate(**inputs, max_new_tokens=128, temperature=0.7, top_p=0.95, pad_token_id=tokenizer.pad_token_id)
     response = tokenizer.decode(outputs[0], skip_special_tokens=True)[len(prompt):].strip()
 
-    st.write(f"🤖 Bot: {response}")
+    st.write(f"🤖 TinyLLama: {response}")
     st.session_state.history = prompt + response + "\n"

@@ -201,3 +201,4 @@ websockets
 xxhash
 yarl
 zipp
+pytest

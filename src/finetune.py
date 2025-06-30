@@ -1,13 +1,30 @@
+"""
+Fine-tuning TinyLlama with LoRA using Modal
+
+This script runs inside a Modal container with GPU access to fine-tune the
+'TinyLlama/TinyLlama-1.1B-Chat-v1.0' model using LoRA adapters and a
+custom Hugging Face dataset.
+
+"""
+
+import os
 import modal
 from modal import App, Image, Secret
-import os
+
 
 app = App("finetune-tinyllama-lora")
 
 image = Image.debian_slim().pip_install(
-    "transformers", "datasets", "torch", "accelerate", "huggingface_hub", 
-    "peft", "bitsandbytes"
+    "transformers",
+    "datasets",
+    "torch",
+    "accelerate",
+    "huggingface_hub",
+    "peft",
+    "bitsandbytes"
 )
+
+
 @app.function(
     gpu="T4",
     timeout=60 * 60,
@@ -15,7 +32,15 @@ image = Image.debian_slim().pip_install(
     secrets=[Secret.from_name("huggingface-token")]
 )
 def run_finetune(model_name: str = "finetuned-tinyllama-lora"):
-    import os
+    """
+    Run LoRA fine-tuning on TinyLlama and push model to Hugging Face Hub.
+
+    Args:
+        model_name (str): Target model name to be pushed on Hugging Face.
+
+    Returns:
+        str: Hugging Face model URL
+    """
     import torch
     from transformers import (
         Trainer,
@@ -28,21 +53,21 @@ def run_finetune(model_name: str = "finetuned-tinyllama-lora"):
     from datasets import load_dataset
     from huggingface_hub import login
 
-    # Login
+    # 🔐 Authenticate with Hugging Face
     hf_token = os.environ["HUGGINGFACE_TOKEN"]
     login(token=hf_token)
 
-    # Load dataset from HF
+    # 📦 Load dataset from Hugging Face Hub
     print("📦 Loading dataset from Hugging Face Hub...")
     dataset = load_dataset("kenzi123/turboml_data", split="train")
 
-    # Filter to ensure validity
+    # Filter out invalid rows
     dataset = dataset.filter(
         lambda x: isinstance(x["prompt"], str) and isinstance(x["completion"], str)
     )
 
-    # Load model & tokenizer
-    print("📦 Loading TinyLlama model...")
+    # 📥 Load base model and tokenizer
+    print("📥 Loading TinyLlama base model...")
     model = AutoModelForCausalLM.from_pretrained(
         "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
         torch_dtype=torch.float16,
@@ -50,14 +75,14 @@ def run_finetune(model_name: str = "finetuned-tinyllama-lora"):
     )
     tokenizer = AutoTokenizer.from_pretrained("TinyLlama/TinyLlama-1.1B-Chat-v1.0")
 
-    # Ensure special tokens
+    # Add EOS and PAD token if missing
     if tokenizer.eos_token is None:
         tokenizer.eos_token = "<|endoftext|>"
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    # LoRA config
-    print("⚙️ Setting up LoRA configuration...")
+    # 🔧 Setup LoRA adapter configuration
+    print("🔧 Applying LoRA configuration...")
     lora_config = LoraConfig(
         task_type=TaskType.CAUSAL_LM,
         inference_mode=False,
@@ -70,21 +95,20 @@ def run_finetune(model_name: str = "finetuned-tinyllama-lora"):
         ],
     )
 
-    # Apply LoRA
-    print("🔧 Applying LoRA adapters...")
     model = get_peft_model(model, lora_config)
     model.print_trainable_parameters()
 
-    # Tokenization
+    # 🧪 Tokenize prompt + completion pairs
     def tokenize_example(example):
         prompt = example["prompt"].strip()
         completion = example["completion"].strip()
         full_text = prompt + tokenizer.eos_token + completion + tokenizer.eos_token
+
         tokenized = tokenizer(
             full_text,
             truncation=True,
             max_length=512,
-            padding="max_length",
+            padding="max_length"
         )
         tokenized["labels"] = tokenized["input_ids"].copy()
         return tokenized
@@ -96,7 +120,7 @@ def run_finetune(model_name: str = "finetuned-tinyllama-lora"):
         desc="Tokenizing data"
     )
 
-    # Training args
+    # 🧠 Define training arguments
     args = TrainingArguments(
         output_dir="/tmp/output",
         per_device_train_batch_size=4,
@@ -115,23 +139,26 @@ def run_finetune(model_name: str = "finetuned-tinyllama-lora"):
         dataloader_pin_memory=False,
     )
 
+    # 🏋️ Run training
     trainer = Trainer(
         model=model,
         args=args,
         train_dataset=tokenized_dataset,
         tokenizer=tokenizer,
-        data_collator=default_data_collator,
+        data_collator=default_data_collator
     )
 
-    print("🚀 Starting LoRA training...")
+    print("🚀 Starting LoRA fine-tuning...")
     trainer.train()
 
-    print("💾 Saving LoRA adapters...")
+    # 💾 Save artifacts
+    print("💾 Saving model & tokenizer...")
     model.save_pretrained("/tmp/output")
     tokenizer.save_pretrained("/tmp/output")
 
-    print(f"📤 Pushing LoRA model to Hugging Face Hub: {model_name}")
+    # ⬆️ Push model to HF Hub
+    print(f"📤 Pushing model to Hugging Face Hub: {model_name}")
     trainer.push_to_hub(commit_message="Fine-tuned TinyLlama with LoRA")
 
-    print(f"✅ LoRA model fine-tuned and pushed to: https://huggingface.co/{model_name}")
+    print(f"✅ Successfully pushed to: https://huggingface.co/{model_name}")
     return f"https://huggingface.co/{model_name}"
