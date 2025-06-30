@@ -1,6 +1,6 @@
 ### 🚀 LLMForge
 
-**LLMForge** is a modular pipeline for Reddit-based data curation and LoRA fine-tuning on `TinyLLaMA-1.1B` every 12 hours. Designed to reflect real-world MLOps orchestration, it automates ingestion, cleaning, training, and Hugging Face syncing — all backed by `Prefect`, `Modal`, and clean CI/CD practices.
+**LLMForge** is a modular LLMOps pipeline for Reddit-based data curation and LoRA fine-tuning on `TinyLLaMA-1.1B` every 12 hours. Designed to reflect real-world MLOps orchestration, it automates ingestion, cleaning, training, and Hugging Face syncing — all backed by `Prefect`, `Modal`, and clean CI/CD practices.
 
 ---
 
