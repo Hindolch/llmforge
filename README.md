@@ -110,6 +110,9 @@ Built with an engineer's mindset under tight resource constraints, LLMForge show
 ### CI: GitHub Actions passing 
 ![Screenshot from 2025-06-30 18-59-53](https://github.com/user-attachments/assets/e563a12f-064f-4998-a0f2-98d92e99ca50)
 
+### Automated Orchestration pipeline: 
+![Screenshot from 2025-07-01 09-55-25](https://github.com/user-attachments/assets/1267e928-3981-4020-95da-edde997dee5c)
+
 ### Streamlit Inference UI
 ![Screenshot from 2025-06-30 18-30-01](https://github.com/user-attachments/assets/0a60489a-4eaf-4d32-974f-30869d95f0ec)
 
