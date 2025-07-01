@@ -103,6 +103,8 @@ Built with an engineer's mindset under tight resource constraints, LLMForge show
 
 ### Modal UI of the Job
 ![Screenshot from 2025-06-30 19-36-05](https://github.com/user-attachments/assets/74a9533e-0a70-4cda-a368-5f9862588a57)
+![Screenshot from 2025-07-01 10-24-59](https://github.com/user-attachments/assets/a70aed63-cf6e-48ed-aece-0c101a8f3def)
+
 
 ### HF Fine-Tuned Model Update & Dataset 
 ![Screenshot from 2025-06-30 18-05-28](https://github.com/user-attachments/assets/f7c61de8-9ed0-449c-9dee-1ebb08f3ad8d)
