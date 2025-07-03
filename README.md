@@ -74,7 +74,6 @@ Built with an engineer's mindset under tight resource constraints, LLMForge show
 .
 ├── run_pipeline.py            # Main flow trigger
 ├── inference.py               # (Optional) Streamlit-based inference
-├── download_model.py          # HF pull helper
 ├── prefect.yaml               # Prefect deployment metadata
 ├── requirements.txt
 ├── src/
