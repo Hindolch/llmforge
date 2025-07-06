@@ -1,9 +1,9 @@
 name: Run LLMForge Pipeline Every 12h
 
-on:
-  schedule:
-    - cron: "0 */12 * * *"  # Every 12 hours UTC
-  workflow_dispatch:
+# on:
+#   schedule:
+#     - cron: "0 */12 * * *"  # Every 12 hours UTC
+#   workflow_dispatch:
 
 jobs:
   turbo-pipeline:
