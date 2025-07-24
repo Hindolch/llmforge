@@ -1,70 +1,107 @@
-### 🚀 LLMForge
+# 🚀 LLMForge
 
-**LLMForge** is a modular LLMOps pipeline for Reddit-based data curation and LoRA fine-tuning on `TinyLLaMA-1.1B` every 12 hours. Designed to reflect real-world MLOps orchestration, it automates ingestion, cleaning, training, and Hugging Face syncing — all backed by `Prefect`, `Modal`, and clean CI/CD practices.
-
----
-
-## ✅ Key Features
-
-- 🔎 Reddit-based prompt-completion dataset creation
-- 🧹 Toxicity filtering using Detoxify
-- ⚙️ Fine-tuning TinyLLaMA with PEFT + LoRA adapters
-- ☁️ Hugging Face Dataset + Model Hub uploads
-- 🔁 Fully orchestrated using `Prefect` flows and tasks
-- 🚀 GPU-powered training on Modal (`T4` instance)
-- 🧪 CI pipeline with `pytest` and GitHub Actions
-- 📧 Email alerts on pipeline trigger
-- ⏱ The whole workflow from start to finsh is being done every 12 hours as said above. (`Fully Automated`) 
+**LLMForge** is a modular LLMOps pipeline originally designed for Reddit-based dataset curation and LoRA fine-tuning on `TinyLLaMA-1.1B`. It automates ingestion, cleaning, training, and Hugging Face syncing — all backed by `Prefect`, `Modal`, and CI/CD best practices.
 
 ---
 
-## 🧠 Why This Matters
+## ✅ What’s New (June 2025)
 
-Built with an engineer's mindset under tight resource constraints, LLMForge shows:
+We’ve added **a one-line fine-tuning CLI flow** using Modal GPU compute and any Hugging Face dataset.
 
-- 💡 Real-world thinking in orchestrated MLOps
-- 🎯 Efficient LoRA fine-tuning without overfitting
-- 🧼 NLP-focused cleaning pipelines that reduce noise
-- ⚙️ Cloud-first thinking (Modal + Prefect + Hugging Face)
+```bash
+./llmforge finetune \
+  --dataset-repo yourusername/your-dataset \
+  --model-repo yourusername/your-model-name \
+  --hf-auth ./hf_token.txt \
+  --push-to-hub
+````
+
+No setup beyond a HF token file and basic venv install. Full walkthrough and screenshots below 👇
+
+---
+
+## 🧠 Why This Update Matters
+
+This update streamlines LLMForge into a **modular LoRA trainer** for the OSS community:
+
+* 🔥 No MLOps knowledge needed to fine-tune & push your own model
+* 🧼 Old full-pipeline logic is retained but commented for now
+* 🔁 Fast launch, easy to build on top of
+
+---
+
+## ⚙️ Key Features
+
+* 🔎 Reddit-based prompt-completion dataset creation
+* 🧹 Toxicity filtering using Detoxify
+* ⚙️ LoRA fine-tuning on Modal with GPU (`T4`)
+* ☁️ Hugging Face Dataset + Model Hub syncing
+* 🔁 `Prefect` orchestration pipeline (legacy)
+* 🚀 New! One-command fine-tuning via CLI + Modal
+* 🧪 CI setup with `pytest` and GitHub Actions
+* 📧 Email alerts for pipeline (optional)
+
+---
+
+## 🆕 New: Simple Finetune CLI
+
+After cloning the repo:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+Place your Hugging Face token in a file named `hf_token.txt`.
+
+Then run:
+
+```bash
+./llmforge finetune \
+  --dataset-repo yourusername/your-dataset(whatever dataset repo name you want to give) \
+  --model-repo yourusername/your-model-name(same naming conventions like dataset) \
+  --hf-auth ./hf_token.txt \
+  --push-to-hub
+```
+
+That's it. Modal will handle the GPU job and push the model to your HF.
+
+---
+
+## 🧼 Notes on Code Cleanup
+
+* `tinylama` and old full-pipeline fine-tuning logic are **commented** (not deleted).
+* The 12-hour looped pipeline is **inactive**, but logic is retained for future revival.
+* `modal secret` creation is handled dynamically using your HF token.
 
 ---
 
 ## 🔧 Architecture Overview
 
-| Module             | Role                                                  |
-|-------------------|-------------------------------------------------------|
-| `src/`            | All pipeline logic (ingestion, processing, finetune) |
-| `tasks/`          | Prefect-wrapped tasks for orchestration              |
-| `tests/`          | Basic CI-compatible test coverage                    |
-| `modal`           | Runs remote GPU training using fine-tuned HF dataset |
-| `prefect.yaml`    | Contains deployment metadata for Prefect Cloud       |
+| Module     | Role                                    |
+| ---------- | --------------------------------------- |
+| `src/`     | Pipeline + finetuning logic             |
+| `tasks/`   | Prefect-wrapped tasks for orchestration |
+| `tests/`   | Test coverage                           |
+| `llmforge` | CLI to trigger training                 |
 
 ---
 
 ### 🛠️ Features Implemented
 
-| Feature                          | Status |
-|----------------------------------|--------|
-| Reddit Ingestion with PRAW       | ✅     |
-| Toxicity Filtering (Detoxify)    | ✅     |
-| Prompt-Completion Generation     | ✅     |
-| Hugging Face Dataset Push        | ✅     |
-| LoRA Fine-tuning on Modal        | ✅     |
-| Hugging Face Model Push          | ✅     |
-| Prefect Workflow Automation      | ✅     |
-| CI + `pytest` test integration   | ✅     |
-| Email Alerts per pipeline run    | ✅     |
-| Streamlit Inference UI (local)   | ✅     |
-
----
-
-### ⚙️ Prefect Orchestration
-
-- ✅ This project was deployed on **Prefect Cloud** using `prefect.yaml`
-- 🔁 A **worker pool** is configured, enabling scalable background runs
-- ❌ However, due to budget constraints, periodic scheduling is disabled
-
-💡 Despite system limitations, the orchestration is ready for production use.
+| Feature                        | Status |
+| ------------------------------ | ------ |
+| Reddit Ingestion with PRAW     | ✅      |
+| Toxicity Filtering (Detoxify)  | ✅      |
+| Prompt-Completion Generation   | ✅      |
+| Hugging Face Dataset Push      | ✅      |
+| LoRA Fine-tuning on Modal      | ✅      |
+| Hugging Face Model Push        | ✅      |
+| CLI-based Finetune Trigger     | ✅      |
+| CI + `pytest` test integration | ✅      |
+| Email Alerts                   | ✅      |
+| Streamlit Inference UI (local) | ✅      |
 
 ---
 
@@ -72,54 +109,55 @@ Built with an engineer's mindset under tight resource constraints, LLMForge show
 
 ```bash
 .
-├── run_pipeline.py            # Main flow trigger
-├── inference.py               # (Optional) Streamlit-based inference
-├── prefect.yaml               # Prefect deployment metadata
+├── hf_uploader.py
+├── inference.py
+├── LICENSE
+├── llmforge                   # CLI wrapper for launching fine-tune jobs
+├── prefect.yaml
+├── __pycache__
+├── README.md
 ├── requirements.txt
+├── run_pipeline.py
 ├── src/
 │   ├── data_ingestion.py
 │   ├── data_processor.py
 │   ├── email.py
-│   └── finetune.py
+│   ├── finetune.py
+│   ├── __init__.py
+│   └── __pycache__
 ├── tasks/
 │   ├── data_ingestion_task.py
 │   ├── data_processor_task.py
-│   └── finetune_task.py
+│   ├── finetune_task.py
+│   └── __pycache__
 ├── tests/
+│   ├── __init__.py
 │   └── test_pipeline.py
-└── .env.example               # Add your creds here
-````
+├── venv
+└──
 
 ---
 
 ### 📷 Screenshots
 
+#### 🔄 One-command Modal GPU Job
 
-### Prefect Flow, Worker Pool & Pipeline Deployment
-![Screenshot from 2025-06-30 12-45-19](https://github.com/user-attachments/assets/0af1526f-1020-40a5-baf7-108b4610da67)
-![Screenshot from 2025-06-30 18-52-34](https://github.com/user-attachments/assets/673dc554-a1df-4c11-ae13-553ab6c4f325)
-![Screenshot from 2025-06-30 18-52-12](https://github.com/user-attachments/assets/936881dd-9d21-4afa-8e6b-56d6922e4405)
+![modal\_job](https://github.com/user-attachments/assets/74a9533e-0a70-4cda-a368-5f9862588a57)
 
-### Modal UI of the Job
-![Screenshot from 2025-06-30 19-36-05](https://github.com/user-attachments/assets/74a9533e-0a70-4cda-a368-5f9862588a57)
-![Screenshot from 2025-07-01 10-24-59](https://github.com/user-attachments/assets/a70aed63-cf6e-48ed-aece-0c101a8f3def)
+#### ✅ Model Pushed to Hugging Face
 
+![hf\_model\_push](https://github.com/user-attachments/assets/f7c61de8-9ed0-449c-9dee-1ebb08f3ad8d)
 
-### HF Fine-Tuned Model Update & Dataset 
-![Screenshot from 2025-06-30 18-05-28](https://github.com/user-attachments/assets/f7c61de8-9ed0-449c-9dee-1ebb08f3ad8d)
+#### 🧪 CI + Prefect Pipelines
 
-### CI: GitHub Actions passing 
-![Screenshot from 2025-06-30 18-59-53](https://github.com/user-attachments/assets/e563a12f-064f-4998-a0f2-98d92e99ca50)
+![ci\_pass](https://github.com/user-attachments/assets/e563a12f-064f-4998-a0f2-98d92e99ca50)
+![prefect\_worker](https://github.com/user-attachments/assets/936881dd-9d21-4afa-8e6b-56d6922e4405)
 
-### Automated Orchestration pipeline: 
-![Screenshot from 2025-07-01 09-55-25](https://github.com/user-attachments/assets/1267e928-3981-4020-95da-edde997dee5c)
+#### 🎛️ Streamlit Inference UI
 
-### Streamlit Inference UI
-![Screenshot from 2025-06-30 18-30-01](https://github.com/user-attachments/assets/0a60489a-4eaf-4d32-974f-30869d95f0ec)
+![streamlit](https://github.com/user-attachments/assets/0a60489a-4eaf-4d32-974f-30869d95f0ec)
 
-### Email Notification
-![Screenshot from 2025-06-30 18-37-01](https://github.com/user-attachments/assets/330a8303-ae8a-4ce8-88d6-a448a3e2e35c)
-
+---
 
 ## 🧪 Testing
 
@@ -127,32 +165,33 @@ Built with an engineer's mindset under tight resource constraints, LLMForge show
 pytest tests/
 ```
 
-✅ All test cases pass (including basic ETL & pipeline stub validation)
+✅ All tests pass for ETL logic and CLI triggers
 
 ---
 
-### ⚠️ Dev Notes on System Constraints
+### ⚠️ Dev Notes
 
-LLMForge was built entirely on a **4GB GPU laptop**, hence:
+LLMForge was built on a **4GB GPU laptop**:
 
-* Streamlit app was tested locally, not deployed
-* Prefect's recurring schedules were not activated
-* Adapter merging was skipped to save VRAM
+* Modal handles all remote fine-tuning
+* The 12-hr pipeline is **currently disabled** for cost reasons
+* Adapter merging was skipped for memory savings
 
-Despite that, the entire pipeline is:
+Despite that:
 
-* Modular, scalable, and cleanly orchestrated
-* Cloud-ready: can run on GPU infra + Prefect Cloud + HF Hub
+* It’s cloud-ready and reproducible
+* Works on real Reddit + HF datasets
+* Fully OSS and tweakable
 
 ---
 
 ## 🧠 Future Extensions
 
-* [ ] Merge LoRA adapters for full model export
-* [ ] Cloud host the Streamlit UI (via Modal or Render)
-* [ ] Add cron-like retriggers using Prefect schedules
-* [ ] Support multi-subreddit ingestion and balancing
-* [ ] Evaluate and log Rouge/Loss metrics post fine-tune
+* [ ] Merge adapters for complete model export
+* [ ] Auto-deploy Streamlit via Modal or Render
+* [ ] Reactivate scheduled flows (Prefect)
+* [ ] Add Rouge/BLEU scoring post-finetune
+* [ ] Support data balancing + multi-source ingestion
 
 ---
 
@@ -162,6 +201,6 @@ Despite that, the entire pipeline is:
 *MLOps • LLM Infra • Applied AI*
 📫 [LinkedIn](https://www.linkedin.com/in/hindol-choudhury/)
 
-
 ---
 
+```

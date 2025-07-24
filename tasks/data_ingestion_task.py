@@ -12,7 +12,11 @@ import os
 import logging
 from dotenv import load_dotenv
 from prefect import task
-from src.data_ingestion import RedditDataIngestion
+from src.data_ingestion import RedditDataIngestion, UserJSONLIngestion, JSONLIngestionConfig
+import os
+import json
+import pandas as pd
+from datasets import Dataset
 
 @task
 def reddit_ingestion_task():
@@ -47,3 +51,37 @@ def reddit_ingestion_task():
         logging.warning("⚠️ No posts were ingested — likely due to encoding issues or no valid data.")
 
     return df
+
+
+@task
+def user_jsonl_ingestion_task(file_path: str) -> pd.DataFrame:
+    """
+    Ingest user-provided JSON or JSONL dataset into a DataFrame, handling conversion in-memory.
+
+    Args:
+        file_path (str): Path to the dataset file (.json or .jsonl)
+
+    Returns:
+        pd.DataFrame: Parsed data ready for downstream use
+    """
+    ext = os.path.splitext(file_path)[1]
+
+    if ext == ".jsonl":
+        with open(file_path, "r") as f:
+            lines = [json.loads(line) for line in f if line.strip()]
+        print(f"✅ Loaded {len(lines)} records from JSONL")
+        return pd.DataFrame(lines)
+
+    elif ext == ".json":
+        with open(file_path, "r") as f:
+            data = json.load(f)
+
+        # If it's a dict, wrap into list
+        if isinstance(data, dict):
+            data = [data]
+
+        print(f"✅ Loaded {len(data)} records from JSON")
+        return pd.DataFrame(data)
+
+    else:
+        raise ValueError("❌ Unsupported file format. Please provide a .json or .jsonl file.")

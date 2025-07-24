@@ -5,4 +5,5 @@ __pycache__
 /notebooks
 /download_model.py
 .env
-
+alpaca_data.json
+/home/kenzi/llmforge/hf_token.txt
