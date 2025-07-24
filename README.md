@@ -37,7 +37,7 @@ This update streamlines LLMForge into a **modular LoRA trainer** for the OSS com
 * ⚙️ LoRA fine-tuning on Modal with GPU (`T4`)
 * ☁️ Hugging Face Dataset + Model Hub syncing
 * 🔁 `Prefect` orchestration pipeline (legacy)
-* 🚀 New! One-command fine-tuning via CLI + Modal
+* 🚀 New! One-command fine-tuning using unsloth via CLI + Modal
 * 🧪 CI setup with `pytest` and GitHub Actions
 * 📧 Email alerts for pipeline (optional)
 
@@ -137,12 +137,13 @@ That's it. Modal will handle the GPU job and push the model to your HF.
 └──
 
 ---
-
+```
 ### 📷 Screenshots
 
 #### 🔄 One-command Modal GPU Job
 
-![modal\_job](https://github.com/user-attachments/assets/74a9533e-0a70-4cda-a368-5f9862588a57)
+<img width="1920" height="994" alt="460599508-74a9533e-0a70-4cda-a368-5f9862588a57" src="https://github.com/user-attachments/assets/5b58a537-54e0-429e-8e04-3d443e14c87e" />
+
 
 #### ✅ Model Pushed to Hugging Face
 
@@ -156,6 +157,16 @@ That's it. Modal will handle the GPU job and push the model to your HF.
 #### 🎛️ Streamlit Inference UI
 
 ![streamlit](https://github.com/user-attachments/assets/0a60489a-4eaf-4d32-974f-30869d95f0ec)
+
+#### Model and Dataset Pushed to Hugging Face after CLI run
+<img width="586" height="170" alt="Screenshot from 2025-07-24 23-45-55" src="https://github.com/user-attachments/assets/a98f1c00-0cf2-4d77-9956-e2242183006e" />
+<img width="574" height="125" alt="Screenshot from 2025-07-24 23-46-00" src="https://github.com/user-attachments/assets/98795585-1879-4014-b3e8-ecef0d4f9046" />
+
+### Terminal outputs after I ran CLI command
+<img width="1697" height="629" alt="Screenshot from 2025-07-24 23-07-25" src="https://github.com/user-attachments/assets/5382bb0c-2ed6-4398-8649-5b1749706781" />
+
+<img width="1685" height="631" alt="Screenshot from 2025-07-24 23-07-31" src="https://github.com/user-attachments/assets/b14b9ba5-eb87-40ae-adcc-44d4331f4042" />
+<img width="1687" height="250" alt="Screenshot from 2025-07-24 23-07-43" src="https://github.com/user-attachments/assets/8b9d7509-02a2-476c-ba8b-c577198a4e71" />
 
 ---
 
@@ -203,4 +214,3 @@ Despite that:
 
 ---
 
-```
